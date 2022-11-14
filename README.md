@@ -38,7 +38,7 @@ Extension [YesWiki](https://yeswiki.net/) pour ajouter un processus de validatio
 
 ### Installation
 
-Dans la page `GererMisesAJour` de votre J9rem, recherchez l'extension `Account Activation By email` et installez-là.
+Dans la page `GererMisesAJour` de votre YesWiki, recherchez l'extension `Account Activation By email` et installez-là.
 
 ### [Utilisation](https://github.com/YesWiki/yeswiki-extension-accountactivationbyemail/blob/master/docs/fr/README.md)
 
