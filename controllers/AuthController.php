@@ -19,6 +19,7 @@ use YesWiki\Core\Service\PasswordHasherFactory;
 use YesWiki\Core\Service\UserManager;
 use YesWiki\Core\YesWikiController;
 use YesWiki\Security\Controller\SecurityController;
+use YesWiki\Wiki;
 use Throwable;
 
 if (!class_exists(CoreAuthController::class, false)) {
@@ -35,10 +36,12 @@ if (!class_exists(CoreAuthController::class, false)) {
             PasswordHasherFactory $passwordHasherFactory,
             SecurityController $securityController,
             UserManager $userManager,
-            AccountActivationService $accountActivationService
+            AccountActivationService $accountActivationService,
+            Wiki $wiki
         ) {
-            parent::__construct($params, $passwordHasherFactory, $securityController, $userManager);
+            parent::__construct($params, $passwordHasherFactory, $securityController, $userManager, $wiki);
             $this->accountActivationService = $accountActivationService;
+            $this->wiki = $wiki;
         }
 
         /**
@@ -57,7 +60,8 @@ if (!class_exists(CoreAuthController::class, false)) {
         public function login($user, $remember = 0)
         {
             $userName = empty($user['name']) ? null : $user['name'];
-            if (!$this->wiki->UserIsAdmin($userName) &&
+            if (!$this->hasLoginExtensions() &&
+                !$this->wiki->UserIsAdmin($userName) &&
                 in_array($this->params->get('signup_email_activation'), [1,true,'1','true'], true) &&
                 !$this->accountActivationService->isActivated($userName) &&
                 (empty($GLOBALS['utilisateur_wikini']) || $GLOBALS['utilisateur_wikini'] != $userName)) {
@@ -74,6 +78,13 @@ if (!class_exists(CoreAuthController::class, false)) {
         protected function UserIsAdmin(?string $userName = null)
         {
             return $this->userManager->isInGroup(ADMIN_GROUP, $userName, false);
+        }
+
+        protected function hasLoginExtensions(): bool
+        {
+            return array_key_exists('logincas', $this->wiki->extensions) ||
+                array_key_exists('loginldap', $this->wiki->extensions) ||
+                array_key_exists('login-sso', $this->wiki->extensions);
         }
     }
 }
