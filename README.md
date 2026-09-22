@@ -17,7 +17,7 @@ Extension [YesWiki](https://yeswiki.net/) to add process to activate account by 
 
 In page `GererMisesAJour` on your YesWiki website, search extension `Account Activation By email` and install it.
 
-### [Usage](https://github.com/YesWiki/yeswiki-extension-accountactivationbyemail/blob/master/docs/en/README.md)
+### [Usage](https://github.com/YesWiki/yeswiki-extension-accountactivationbyemail/blob/doryphore/docs/en/README.md)
 
 Nothing special to do, just follow instrutions during usage.
 
@@ -40,7 +40,7 @@ Extension [YesWiki](https://yeswiki.net/) pour ajouter un processus de validatio
 
 Dans la page `GererMisesAJour` de votre YesWiki, recherchez l'extension `Account Activation By email` et installez-là.
 
-### [Utilisation](https://github.com/YesWiki/yeswiki-extension-accountactivationbyemail/blob/master/docs/fr/README.md)
+### [Utilisation](https://github.com/YesWiki/yeswiki-extension-accountactivationbyemail/blob/doryphore/docs/fr/README.md)
 
 Rien de spécifique à faire, juste suivre les instructions lors de l'usage.
 
