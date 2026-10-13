@@ -5,6 +5,7 @@ Cette extension ajoute un processus de validation par e-mail des comptes
  - Le processus est activé dès l'installation de l'extension
  - Il n'a pas été vérifié pour fonctionner avec les extensions `logincas`, `login-sso`, `loginldap`.
  - Il est possible de désactiver le processus de vérification dans la page [GererConfig](?GererConfig ':ignore') dans la partie `Activation des comptes par e-mail` paramètre `signup_email_activation`
+ - Les inscriptions avec une adresse e-mail jetable (yopmail, leafflip…) sont refusées, d'après la [liste publique des domaines jetables](https://github.com/disposable-email-domains/disposable-email-domains). Le paramètre `signup_refuse_disposable_email` désactive ce refus, et `signup_disposable_email_domains` ajoute des domaines à la liste. Un admin peut toujours créer un compte avec n'importe quelle adresse.
 
 ## Fonctionnement
 

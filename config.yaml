@@ -5,9 +5,13 @@
 parameters:
   signup_email_activation: true # Activate the signup activation mail process
   user_activation_key_length: 20 # length of activation/inactivation keys
+  signup_refuse_disposable_email: true # refuse signups with a throwaway mail address
+  signup_disposable_email_domains: '' # domains added to the bundled list
   accountactivationbyemail_editable_config_params:
     - 'signup_email_activation'
     - 'user_activation_key_length'
+    - 'signup_refuse_disposable_email'
+    - 'signup_disposable_email_domains'
 
 services:
   _defaults:

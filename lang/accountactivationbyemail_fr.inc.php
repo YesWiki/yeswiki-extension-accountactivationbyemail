@@ -20,8 +20,11 @@ return [
     'ACCOUNTACTIVATION_BY_EMAIL_ACTIVATION_ERROR' => 'Il n\'a pas été possible d\'activer votre compte parce que \'%{error}\'',
     'ACCOUNTACTIVATION_BY_EMAIL_ACTIVATION_SUCCESS' => 'Votre compte a bien été activé.',
     'ACCOUNTACTIVATION_BY_EMAIL_ALREADY_ACTIVATED' => 'Votre compte a déjà été activé.',
+    'ACCOUNTACTIVATION_BY_EMAIL_DISPOSABLE_EMAIL' => 'Les adresses e-mail jetables ne sont pas acceptées. Merci d\'utiliser une adresse e-mail durable.',
 
     'EDIT_CONFIG_HINT_SIGNUP_EMAIL_ACTIVATION' => 'Activer la vérification des e-mails (true ou false)',
     'EDIT_CONFIG_HINT_USER_ACTIVATION_KEY_LENGTH' => 'Longueur de la clé d\'activation des utilisateurs',
+    'EDIT_CONFIG_HINT_SIGNUP_REFUSE_DISPOSABLE_EMAIL' => 'Refuser les inscriptions avec une adresse e-mail jetable (true ou false)',
+    'EDIT_CONFIG_HINT_SIGNUP_DISPOSABLE_EMAIL_DOMAINS' => 'Domaines d\'e-mails jetables à ajouter à la liste fournie, séparés par des virgules',
     'EDIT_CONFIG_GROUP_ACCOUNTACTIVATIONBYEMAIL' => 'Activation des comptes par e-mail',
 ];
