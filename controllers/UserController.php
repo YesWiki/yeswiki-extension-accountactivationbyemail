@@ -16,6 +16,7 @@ use YesWiki\Accountactivationbyemail\Service\AccountActivationService;
 use YesWiki\Core\Controller\UserController as CoreUserController;
 use YesWiki\Core\Entity\User;
 use YesWiki\Core\Exception\DeleteUserException;
+use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\YesWikiController;
 
 if (!class_exists(CoreUserController::class, false)) {
@@ -34,21 +35,10 @@ if (!class_exists(CoreUserController::class, false)) {
         public function delete(User $user)
         {
             parent::delete($user);
-            // delete activation status
-            $this->tripleStore->delete(
-                $user['name'],
-                AccountActivationService::TRIPLE_PROPERTY_IS_ACTIVATED,
-                null,
-                '',
-                ''
-            );
-            $this->tripleStore->delete(
-                $user['name'],
-                AccountActivationService::TRIPLE_PROPERTY_ACTIVATION_KEY,
-                null,
-                '',
-                ''
-            );
+            $tripleStore = $this->getService(TripleStore::class);
+            foreach ([AccountActivationService::TRIPLE_PROPERTY_IS_ACTIVATED, AccountActivationService::TRIPLE_PROPERTY_ACTIVATION_KEY] as $property) {
+                $tripleStore->delete($user['name'], $property, null, '', '');
+            }
         }
     }
 }
