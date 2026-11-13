@@ -14,6 +14,7 @@ return [
     'ACCOUNTACTIVATION_BY_EMAIL_TEXT' => "Bonjour,\n\nVotre compte %{userName} doit être activé en cliquant sur le lien ci-dessous ou en le copiant dans la barre de navigateur internet.",
     'ACCOUNTACTIVATION_BY_EMAIL_WARNING' => 'Votre compte doit être activé au préalable. %{message}',
     'ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_SENT' => 'Un e-mail d\'activation vous a été envoyé. Veuillez suivre les instructions qu\'il contient.',
+    'ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_ALREADY_SENT' => 'Un e-mail d\'activation vous a déjà été envoyé, suivez le lien qu\'il contient. Pour en recevoir un nouveau, reconnectez-vous dans un quart d\'heure.',
     'ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_NOT_SENT' => 'Il n\'a pas été possible de vous envoyer un e-mail d\'activation. Veuillez contacter les adminsitrateurs du site',
     'ACCOUNTACTIVATION_BY_EMAIL_EMPTY_USERNAME' => 'Le nom d\'utilisateur est vide',
     'ACCOUNTACTIVATION_BY_EMAIL_EMPTY_KEY' => 'La clé est vide',

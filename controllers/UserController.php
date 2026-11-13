@@ -1,13 +1,6 @@
 <?php
 
-/*
- * This file is part of the YesWiki Extension accountactivationbyemail.
- *
- * Authors : see README.md file that was distributed with this source code.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+/* Refuses throwaway mail addresses at signup and cleans activation data when an account goes. Part of the YesWiki extension accountactivationbyemail, see LICENSE. */
 
 namespace YesWiki\Accountactivationbyemail\Controller;
 
@@ -18,7 +11,6 @@ use YesWiki\Accountactivationbyemail\Service\DisposableEmailDomains;
 use YesWiki\Core\Controller\UserController as CoreUserController;
 use YesWiki\Core\Entity\User;
 use YesWiki\Core\Exception\DeleteUserException;
-use YesWiki\Core\Service\TripleStore;
 use YesWiki\Core\YesWikiController;
 
 if (!class_exists(CoreUserController::class, false)) {
@@ -28,11 +20,7 @@ if (!class_exists(CoreUserController::class, false)) {
 } else {
     class UserController extends CoreUserController
     {
-        /**
-         * create a user, refusing a throwaway mail address unless an admin is acting
-         * @throws DisposableEmail
-         * @throws Exception
-         */
+        /** Create a user, refusing a throwaway mail address unless an admin is acting. */
         public function create(array $newValues): ?User
         {
             if (
@@ -46,19 +34,11 @@ if (!class_exists(CoreUserController::class, false)) {
             return parent::create($newValues);
         }
 
-        /**
-         * delete a user but check if possible before
-         * @param User $user
-         * @throws DeleteUserException
-         * @throws Exception
-         */
+        /** Delete a user and what this extension stored about it. */
         public function delete(User $user)
         {
             parent::delete($user);
-            $tripleStore = $this->getService(TripleStore::class);
-            foreach ([AccountActivationService::TRIPLE_PROPERTY_IS_ACTIVATED, AccountActivationService::TRIPLE_PROPERTY_ACTIVATION_KEY] as $property) {
-                $tripleStore->delete($user['name'], $property, null, '', '');
-            }
+            $this->getService(AccountActivationService::class)->forget($user['name']);
         }
     }
 }

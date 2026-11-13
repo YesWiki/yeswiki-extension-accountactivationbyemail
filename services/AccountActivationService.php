@@ -1,13 +1,6 @@
 <?php
 
-/*
- * This file is part of the YesWiki Extension accountactivationbyemail.
- *
- * Authors : see README.md file that was distributed with this source code.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+/* Activation status, keys and activation mails of the wiki's accounts. Part of the YesWiki extension accountactivationbyemail, see LICENSE. */
 
 namespace YesWiki\Accountactivationbyemail\Service;
 
@@ -25,8 +18,10 @@ class AccountActivationService
 {
     public const TRIPLE_PROPERTY_IS_ACTIVATED = 'https://yeswiki.net/vocabulary/account-is-activated';
     public const TRIPLE_PROPERTY_ACTIVATION_KEY = 'https://yeswiki.net/vocabulary/activation-key';
+    public const TRIPLE_PROPERTY_MAIL_SENT_AT = 'https://yeswiki.net/vocabulary/activation-mail-sent-at';
     public const TRIPLE_ACTIVATED_VALUE = 'true';
     public const TRIPLE_NOT_ACTIVATED_VALUE = 'false';
+    public const RESEND_DELAY = 900;
 
     protected $params;
     protected $templateEngine;
@@ -48,15 +43,7 @@ class AccountActivationService
         $this->wiki = $wiki;
     }
 
-    /**
-     * activate a user
-     * @param string $userName
-     * @param string $key
-     * @param bool $force
-     * @throws BadUserName
-     * @throws BadKey
-     * @throws Exception
-     */
+    /** Activate an account, with its key unless forced. */
     public function activate(string $userName, string $key, bool $force = false)
     {
         $this->checkValidity($userName, $key, $force, 'activate');
@@ -67,11 +54,6 @@ class AccountActivationService
                 throw new BadKey("The activation key for user $userName is invalid. Security issue ? ");
             }
             if (is_null($status)) {
-                // TODO check if following line is needed
-                // if (!$force){
-                //     throw new Exception('It should not occures : the activation process should have added the IsActivated key before.');
-                // }
-
                 $res = $this->tripleStore->create(
                     $userName,
                     self::TRIPLE_PROPERTY_IS_ACTIVATED,
@@ -95,19 +77,11 @@ class AccountActivationService
                     throw new Exception("Cannot update activation status for user $userName (error code = $res)");
                 }
             }
-            // success
-            // We remove all obsolete activation keys from the database
             $this->deleteActivationKeys($userName);
         }
     }
 
-    /**
-     * inactivate a user
-     * @param string $userName
-     * @throws BadUserName
-     * @throws BadKey
-     * @throws Exception
-     */
+    /** Mark an account as not activated. */
     public function inactivate(string $userName)
     {
         $this->checkValidity($userName, "", true, 'inactivate');
@@ -138,15 +112,21 @@ class AccountActivationService
                     throw new Exception("Cannot update activation status for user $userName (error code = $res)");
                 }
             }
-            // success
         }
     }
 
-    /**
-     * send an email with activation link
-     * @param null|string $userName
-     * @throws Exception
-     */
+    /** Whether a mail may go out now: once when the session is restored, every RESEND_DELAY seconds when the person signs in. */
+    public function maySendActivationLink(string $userName, bool $restoringSession): bool
+    {
+        $sentAt = $this->activationLinkSentAt($userName);
+        if ($restoringSession) {
+            return $sentAt === null && !$this->hasActivationKey($userName);
+        }
+
+        return $sentAt === null || time() - $sentAt >= self::RESEND_DELAY;
+    }
+
+    /** Send the account's owner a mail with a new activation link. */
     public function sendActivationLink(?string $userName)
     {
         if (empty($userName)) {
@@ -157,7 +137,7 @@ class AccountActivationService
             throw new Exception("Can not send an activation email for a not existing user ($userName)");
         }
         $link = $this->getActivationLink($user['name']);
-        // get Mailer dynamically because of circular reference via __construct
+        $this->rememberActivationLinkSent($user['name']);
         $mailer = $this->wiki->services->get(Mailer::class);
 
         $baseUrl = $this->getBaseUrl();
@@ -187,15 +167,14 @@ class AccountActivationService
         $mailer->sendEmailFromAdmin($user['email'], $subject, $text, $html);
     }
 
-    /**
-     * check validity of params
-     * @param string $userName
-     * @param string $key
-     * @param bool $force
-     * @param string $mode
-     * @throws BadUserName
-     * @throws BadKey
-     */
+    /** Forget everything this extension stored about an account. */
+    public function forget(string $userName)
+    {
+        foreach ([self::TRIPLE_PROPERTY_IS_ACTIVATED, self::TRIPLE_PROPERTY_ACTIVATION_KEY, self::TRIPLE_PROPERTY_MAIL_SENT_AT] as $property) {
+            $this->tripleStore->delete($userName, $property, null, '', '');
+        }
+    }
+
     protected function checkValidity(string $userName, string $key, bool $force, string $mode = 'activate')
     {
         if (empty($userName)) {
@@ -215,11 +194,6 @@ class AccountActivationService
         }
     }
 
-    /**
-     * get activation status
-     * @param string $userName
-     * @return null|string
-     */
     protected function getActivationStatus(string $userName): ?string
     {
         $value = $this->tripleStore->getOne(
@@ -231,22 +205,11 @@ class AccountActivationService
         return is_string($value) ? $value : null;
     }
 
-    /**
-     * check if user is activate
-     * @param string $userName
-     * @return bool
-     */
     public function isActivated(string $userName): bool
     {
         return $this->getActivationStatus($userName) === self::TRIPLE_ACTIVATED_VALUE;
     }
 
-    /**
-     * check activation key
-     * @param string $userName
-     * @param string $key
-     * @return bool
-     */
     protected function isValidateActivationKey(string $userName, string $key): bool
     {
         return !is_null($this->tripleStore->exist(
@@ -258,35 +221,38 @@ class AccountActivationService
         ));
     }
 
-    /**
-     * delete all activation keys for user
-     * @param string $userName
-     */
-    protected function deleteActivationKeys(string $userName)
+    protected function hasActivationKey(string $userName): bool
     {
-        $this->tripleStore->delete(
-            $userName,
-            self::TRIPLE_PROPERTY_ACTIVATION_KEY,
-            null,
-            '',
-            ''
-        );
+        return $this->tripleStore->getOne($userName, self::TRIPLE_PROPERTY_ACTIVATION_KEY, '', '') !== null;
     }
 
-    /**
-     * getActivationLink for a userName
-     * @param string $userName
-     * @return string
-     * @throws Exception
-     */
+    protected function activationLinkSentAt(string $userName): ?int
+    {
+        $value = $this->tripleStore->getOne($userName, self::TRIPLE_PROPERTY_MAIL_SENT_AT, '', '');
+
+        return is_string($value) && ctype_digit($value) ? (int)$value : null;
+    }
+
+    protected function rememberActivationLinkSent(string $userName)
+    {
+        $this->tripleStore->delete($userName, self::TRIPLE_PROPERTY_MAIL_SENT_AT, null, '', '');
+        $this->tripleStore->create($userName, self::TRIPLE_PROPERTY_MAIL_SENT_AT, (string)time(), '', '');
+    }
+
+    /** Drop every activation key of an account, and when its last mail went out. */
+    protected function deleteActivationKeys(string $userName)
+    {
+        $this->tripleStore->delete($userName, self::TRIPLE_PROPERTY_ACTIVATION_KEY, null, '', '');
+        $this->tripleStore->delete($userName, self::TRIPLE_PROPERTY_MAIL_SENT_AT, null, '', '');
+    }
+
+    /** Store a new activation key for an account and return the link that uses it. */
     protected function getActivationLink(string $userName): string
     {
-        // Let's create an activation key suitable for a email
         $length = $this->params->get('user_activation_key_length');
-        $length = (is_scalar($length) && intval($length) > 6) ? intval($length) : 20;// default 20 if error
+        $length = (is_scalar($length) && intval($length) > 6) ? intval($length) : 20;
         $key = base64_encode(random_bytes($length));
 
-        // Store the key in the TripleStore
         $res = $this->tripleStore->create(
             $userName,
             self::TRIPLE_PROPERTY_ACTIVATION_KEY,

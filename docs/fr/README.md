@@ -13,6 +13,8 @@ Lors de la création d'un compte, celui-ci est considéré comme non-activé.
 
 Lors d'une tentative de connexion (via `cookies` ou par l'action `{{login}}`), un e-mail est envoyé avec un lien d'activation et un message d'erreur est affiché.
 
+Un seul e-mail part quand la session est reprise depuis les cookies. Une nouvelle connexion avec l'action `{{login}}` en renvoie un, au plus un par quart d'heure.
+
 En cliquant sur le lien, le compte se retrouve alors activé et fonctionnel.
 
 **Les administrateurs sont toujours considérés comme actifs, quelque soit le statut d'activation en base de données.**

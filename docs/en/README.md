@@ -12,6 +12,8 @@ At creation, an account is considered as inactivated.
 
 When trying to connect (via `cookies` or with action `{{login}}`), an e-mail is sent with the activation link and an error message is displayed.
 
+Only one e-mail goes out when the session is restored from cookies. Signing in again with `{{login}}` sends another one, at most once every fifteen minutes.
+
 By clicking on the link, the account is activated.
 
 **Administrators are always considered as activated, even if the database status is inactivated.**

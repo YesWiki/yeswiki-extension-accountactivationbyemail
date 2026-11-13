@@ -1,17 +1,11 @@
 <?php
 
-/*
- * This file is part of the YesWiki Extension accountactivationbyemail.
- *
- * Authors : see README.md file that was distributed with this source code.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+/* Refuses to sign in an account that is not activated yet, and mails it an activation link. Part of the YesWiki extension accountactivationbyemail, see LICENSE. */
 
 namespace YesWiki\Accountactivationbyemail\Controller;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Tamtamchik\SimpleFlash\Flash;
 use YesWiki\Accountactivationbyemail\Exception\BadLogin;
 use YesWiki\Accountactivationbyemail\Service\AccountActivationService;
 use YesWiki\Core\Controller\AuthController as CoreAuthController;
@@ -30,6 +24,7 @@ if (!class_exists(CoreAuthController::class, false)) {
     class AuthController extends CoreAuthController
     {
         protected $accountActivationService;
+        private $restoringSession = false;
 
         public function __construct(
             ParameterBagInterface $params,
@@ -44,16 +39,17 @@ if (!class_exists(CoreAuthController::class, false)) {
             $this->wiki = $wiki;
         }
 
-        /**
-         * connect a user from SESSION or COOKIES
-         */
+        /** Restore the user of this request from the session or the cookies. */
         public function connectUser()
         {
+            $this->restoringSession = true;
             try {
                 parent::connectUser();
             } catch (BadLogin $th) {
-                flash($th->getMessage(), 'error');
+                Flash::error($th->getMessage());
                 $this->logout();
+            } finally {
+                $this->restoringSession = false;
             }
         }
 
@@ -65,14 +61,23 @@ if (!class_exists(CoreAuthController::class, false)) {
                 in_array($this->params->get('signup_email_activation'), [1,true,'1','true'], true) &&
                 !$this->accountActivationService->isActivated($userName) &&
                 (empty($GLOBALS['utilisateur_wikini']) || $GLOBALS['utilisateur_wikini'] != $userName)) {
-                try {
-                    $this->accountActivationService->sendActivationLink($userName);
-                } catch (Throwable $th) {
-                    throw new BadLogin(_t('ACCOUNTACTIVATION_BY_EMAIL_WARNING', ['message'=>_t('ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_NOT_SENT')]));
-                }
-                throw new BadLogin(_t('ACCOUNTACTIVATION_BY_EMAIL_WARNING', ['message'=>_t('ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_SENT')]));
+                throw new BadLogin(_t('ACCOUNTACTIVATION_BY_EMAIL_WARNING', ['message' => $this->mailActivationLink($userName)]));
             }
             parent::login($user, $remember);
+        }
+
+        /** Send the activation mail unless one went out too recently, and say which happened. */
+        private function mailActivationLink(string $userName): string
+        {
+            if (!$this->accountActivationService->maySendActivationLink($userName, $this->restoringSession)) {
+                return _t('ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_ALREADY_SENT');
+            }
+            try {
+                $this->accountActivationService->sendActivationLink($userName);
+            } catch (Throwable $th) {
+                return _t('ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_NOT_SENT');
+            }
+            return _t('ACCOUNTACTIVATION_BY_EMAIL_MESSAGE_SENT');
         }
 
         protected function UserIsAdmin(?string $userName = null)
