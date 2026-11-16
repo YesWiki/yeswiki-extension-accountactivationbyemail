@@ -1,0 +1,38 @@
+{# Review of one account before an admin deletes it. Part of the YesWiki extension accountactivationbyemail, see LICENSE. #}
+{% if login is defined %}
+  <div class="alert alert-danger">{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_ADMIN_ONLY') }}</div>
+  {{ login|raw }}
+{% elseif deleted is defined %}
+  <div class="alert alert-success">{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_DONE', {userName: deleted}) }}</div>
+  {% if pages is not empty %}
+    <p>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGES_LEFT') }}</p>
+    <ul>
+      {% for tag in pages %}
+        <li><a href="{{ url({tag: tag}) }}">{{ tag }}</a> · <a href="{{ url({tag: tag, handler: 'deletepage'}) }}">{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGE') }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% else %}
+  <h2>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_TITLE', {userName: user.name}) }}</h2>
+  <dl class="dl-horizontal">
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_HOOK_EMAIL') }}</dt><dd>{{ user.email }}</dd>
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_SIGNUP') }}</dt><dd>{{ user.signuptime }}</dd>
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_ACTIVATED') }}</dt><dd>{{ activated ? _t('YES') : _t('NO') }}</dd>
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_REVISIONS') }}</dt><dd>{{ revisions }}</dd>
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_GROUPS') }}</dt><dd>{{ groups is empty ? '–' : groups|join(', ') }}</dd>
+    <dt>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_HOOK_SCORE') }}</dt>
+    <dd>{{ verdict.score }}{% if verdict.reasons is not empty %} ({% for reason in verdict.reasons %}{{ _t('ACCOUNTACTIVATION_BY_EMAIL_SPAM_' ~ reason|upper) }}{{ loop.last ? '' : ', ' }}{% endfor %}){% endif %}</dd>
+  </dl>
+  {% if pages is not empty %}
+    <p>{{ _t('ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGES') }}</p>
+    <ul>
+      {% for tag in pages %}
+        <li><a href="{{ url({tag: tag}) }}">{{ tag }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post">
+    <input type="hidden" name="csrf-token" value="{{ csrfToken({id: 'main', refresh: false})|e('html_attr') }}">
+    <button type="submit" class="btn btn-danger">{{ _t('ACCOUNTACTIVATION_BY_EMAIL_HOOK_DELETE') }}</button>
+  </form>
+{% endif %}

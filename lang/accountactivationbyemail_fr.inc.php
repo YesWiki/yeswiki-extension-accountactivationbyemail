@@ -1,13 +1,6 @@
 <?php
 
-/*
- * This file is part of the YesWiki Extension groupmanagement.
- *
- * Authors : see README.md file that was distributed with this source code.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+/* French strings of the YesWiki extension accountactivationbyemail, see LICENSE. */
 
 return [
     'ACCOUNTACTIVATION_BY_EMAIL_SUBJECT' => 'Lien d activation de votre compte %{userName}',
@@ -23,9 +16,49 @@ return [
     'ACCOUNTACTIVATION_BY_EMAIL_ALREADY_ACTIVATED' => 'Votre compte a déjà été activé.',
     'ACCOUNTACTIVATION_BY_EMAIL_DISPOSABLE_EMAIL' => 'Les adresses e-mail jetables ne sont pas acceptées. Merci d\'utiliser une adresse e-mail durable.',
 
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_REFUSED' => 'Ce nom ou cette adresse ressemble à ceux qu\'utilisent les robots pour s\'inscrire. Veuillez nous contacter directement par mail si jamais votre compte est légitime.',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_REFUSED_CONTACT' => 'Ce nom ou cette adresse ressemble à ceux qu\'utilisent les robots pour s\'inscrire. Veuillez nous contacter directement par mail si jamais votre compte est légitime : %{contact}',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_WORDS' => 'mots de spam',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_CODE' => 'nom en forme de code',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_DISPOSABLE' => 'adresse jetable',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_EMAILASNAME' => 'adresse e-mail comme nom',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_MISMATCH' => 'adresse sans rapport avec le nom',
+    'ACCOUNTACTIVATION_BY_EMAIL_SPAM_UNTOUCHED' => 'rien écrit depuis une semaine',
+    'ACCOUNTACTIVATION_BY_EMAIL_HOOK_SUSPICIOUS' => 'Inscription à vérifier : %{userName}',
+    'ACCOUNTACTIVATION_BY_EMAIL_HOOK_EMAIL' => 'E-mail',
+    'ACCOUNTACTIVATION_BY_EMAIL_HOOK_SCORE' => 'Score',
+    'ACCOUNTACTIVATION_BY_EMAIL_HOOK_REASONS' => 'Raisons',
+    'ACCOUNTACTIVATION_BY_EMAIL_HOOK_DELETE' => 'Supprimer le compte',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_ADMIN_ONLY' => 'Seul un admin peut supprimer un compte. Connectez-vous avec un compte admin.',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_GONE' => 'Le compte « %{userName} » n\'existe pas ou a déjà été supprimé.',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_TITLE' => 'Supprimer le compte %{userName} ?',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_SIGNUP' => 'Inscription',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_ACTIVATED' => 'Activé',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_REVISIONS' => 'Révisions',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_GROUPS' => 'Groupes',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGES' => 'Pages dont ce compte est propriétaire, qui resteront sans propriétaire :',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGES_LEFT' => 'Ces pages lui appartenaient et sont toujours là :',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_PAGE' => 'supprimer la page',
+    'ACCOUNTACTIVATION_BY_EMAIL_DELETE_DONE' => 'Le compte %{userName} a été supprimé.',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_SPAM' => 'Liste les comptes qui ressemblent à des robots',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_SPAM_ALL' => 'Montrer aussi les comptes qui ont des points sans atteindre le seuil',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_SPAM_DELETE' => 'Supprimer les comptes au-dessus du seuil qui n\'ont rien laissé (ni révision, ni page, ni groupe)',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_DELETED' => 'supprimé',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_DELETED_COUNT' => '%{count} compte(s) supprimé(s).',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_PURGE' => 'Supprime les comptes jamais activés qui n\'ont rien laissé',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_DRY_RUN' => 'Lister sans supprimer',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_PURGE_WOULD' => '%{count} compte(s) non activé(s) depuis plus de %{days} jour(s) seraient supprimés.',
+    'ACCOUNTACTIVATION_BY_EMAIL_CLI_PURGE_DONE' => '%{count} compte(s) non activé(s) depuis plus de %{days} jour(s) supprimé(s).',
+
     'EDIT_CONFIG_HINT_SIGNUP_EMAIL_ACTIVATION' => 'Activer la vérification des e-mails (true ou false)',
     'EDIT_CONFIG_HINT_USER_ACTIVATION_KEY_LENGTH' => 'Longueur de la clé d\'activation des utilisateurs',
     'EDIT_CONFIG_HINT_SIGNUP_REFUSE_DISPOSABLE_EMAIL' => 'Refuser les inscriptions avec une adresse e-mail jetable (true ou false)',
     'EDIT_CONFIG_HINT_SIGNUP_DISPOSABLE_EMAIL_DOMAINS' => 'Domaines d\'e-mails jetables à ajouter à la liste fournie, séparés par des virgules',
+    'EDIT_CONFIG_HINT_SIGNUP_REFUSE_SPAM' => 'Refuser les inscriptions dont le nom ou l\'adresse ressemble à un robot (true ou false)',
+    'EDIT_CONFIG_HINT_SIGNUP_SPAM_THRESHOLD' => 'Score à partir duquel une inscription est refusée',
+    'EDIT_CONFIG_HINT_SIGNUP_SPAM_WORDS' => 'Mots de spam à ajouter, en expression régulière',
+    'EDIT_CONFIG_HINT_SIGNUP_SPAM_CONTACT' => 'Adresse à écrire pour un compte refusé à tort',
+    'EDIT_CONFIG_HINT_SIGNUP_MATTERMOST_WEBHOOK' => 'Webhook Mattermost pour les inscriptions à vérifier (celui de la ferme par défaut)',
+    'EDIT_CONFIG_HINT_UNACTIVATED_ACCOUNT_LIFETIME' => 'Jours avant la suppression d\'un compte jamais activé (0 pour garder)',
     'EDIT_CONFIG_GROUP_ACCOUNTACTIVATIONBYEMAIL' => 'Activation des comptes par e-mail',
 ];

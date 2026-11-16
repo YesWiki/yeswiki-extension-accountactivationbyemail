@@ -7,6 +7,31 @@ Cette extension ajoute un processus de validation par e-mail des comptes
  - Il est possible de désactiver le processus de vérification dans la page [GererConfig](?GererConfig ':ignore') dans la partie `Activation des comptes par e-mail` paramètre `signup_email_activation`
  - Les inscriptions avec une adresse e-mail jetable (yopmail, leafflip…) sont refusées, d'après la [liste publique des domaines jetables](https://github.com/disposable-email-domains/disposable-email-domains). Le paramètre `signup_refuse_disposable_email` désactive ce refus, et `signup_disposable_email_domains` ajoute des domaines à la liste. Un admin peut toujours créer un compte avec n'importe quelle adresse.
 
+## Robots à l'inscription
+
+Chaque inscription reçoit un score d'après son nom et son adresse :
+
+| Signal | Points |
+|---|---|
+| Mots de paris, de casino, d'IPTV ou d'escort dans le nom ou l'adresse (`tk88cards1`, `shbetinfo`, `uktvhub`) | 3 |
+| Nom en forme de code ou de domaine (`e39bmwcom`, `uu88apporg2`) | 3 |
+| Domaine jetable | 2 |
+| Adresse chiffrée sans rapport avec le nom (`BerthaGwinn`, `martarobertson126@gmail.com`) | 2 |
+| Adresse e-mail utilisée comme nom | 1 |
+
+ - À partir de 3 points (`signup_spam_threshold`), l'inscription est refusée avec un message qui invite à écrire par mail. L'adresse donnée est `signup_spam_contact`, ou à défaut l'adresse admin de la ferme (`yeswiki-farm-admin-email`), et `signup_refuse_spam` désactive le refus. `signup_spam_words` ajoute des mots, en expression régulière.
+ - En dessous, une inscription qui a des points est envoyée sur Mattermost, avec un lien vers la page de suppression du compte. Le webhook est `signup_mattermost_webhook`, ou à défaut celui de la ferme (`yeswiki-farm-mattermost-webhook`).
+ - La page `?PagePrincipale/deleteaccount&username=<nom>` montre le compte (adresse, inscription, activation, révisions, pages, groupes, score) et le supprime après confirmation. Elle est réservée aux admins.
+
+## Comptes jamais activés
+
+Un compte qui a reçu un lien d'activation sans jamais s'en servir, et qui n'a rien laissé (ni révision, ni page, ni groupe), est supprimé au bout de 3 jours (`unactivated_account_lifetime`, `0` pour les garder). La purge se fait à chaque nouvelle inscription. Les comptes créés avant l'installation de l'extension ne sont jamais touchés.
+
+En ligne de commande :
+
+ - `./yeswicli activation:purge --dry-run` liste les comptes que la purge supprimerait, et sans `--dry-run` les supprime.
+ - `./yeswicli activation:spam` liste les comptes au-dessus du seuil, en comptant un point de plus pour ceux qui n'ont rien écrit depuis une semaine. `--all` montre aussi ceux qui ont des points sous le seuil, et `--delete` supprime ceux qui n'ont rien laissé. Pour les autres, la commande donne le lien de la page de suppression.
+
 ## Fonctionnement
 
 Lors de la création d'un compte, celui-ci est considéré comme non-activé.

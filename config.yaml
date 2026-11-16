@@ -1,17 +1,26 @@
-# This file is part of the YesWiki Extension accountactivationbyemail.
-# Authors : see README.md file that was distributed with this source code.
-# For the full copyright and license information, please view the LICENSE
-# file that was distributed with this source code.
+# Settings and services of the YesWiki extension accountactivationbyemail, see LICENSE.
 parameters:
-  signup_email_activation: true # Activate the signup activation mail process
-  user_activation_key_length: 20 # length of activation/inactivation keys
-  signup_refuse_disposable_email: true # refuse signups with a throwaway mail address
-  signup_disposable_email_domains: '' # domains added to the bundled list
+  signup_email_activation: true
+  user_activation_key_length: 20
+  signup_refuse_disposable_email: true
+  signup_disposable_email_domains: ''
+  signup_refuse_spam: true
+  signup_spam_threshold: 3
+  signup_spam_words: ''
+  signup_spam_contact: ''
+  signup_mattermost_webhook: ''
+  unactivated_account_lifetime: 3
   accountactivationbyemail_editable_config_params:
     - 'signup_email_activation'
     - 'user_activation_key_length'
     - 'signup_refuse_disposable_email'
     - 'signup_disposable_email_domains'
+    - 'signup_refuse_spam'
+    - 'signup_spam_threshold'
+    - 'signup_spam_words'
+    - 'signup_spam_contact'
+    - 'signup_mattermost_webhook'
+    - 'unactivated_account_lifetime'
 
 services:
   _defaults:
