@@ -25,7 +25,7 @@ Chaque inscription reçoit un score d'après son nom et son adresse :
 
 ## Comptes jamais activés
 
-Un compte qui a reçu un lien d'activation sans jamais s'en servir, et qui n'a rien laissé (ni révision, ni page, ni groupe), est supprimé au bout de 3 jours (`unactivated_account_lifetime`, `0` pour les garder). La purge se fait à chaque nouvelle inscription. Les comptes créés avant l'installation de l'extension ne sont jamais touchés.
+Un compte qui ne s'est pas servi de son dernier lien d'activation, et qui n'a rien laissé (ni révision, ni page, ni groupe), est supprimé 3 jours après l'envoi de ce lien (`unactivated_account_lifetime`, `0` pour les garder). La purge se fait à chaque nouvelle inscription. Un compte qui n'a jamais reçu de lien, comme ceux créés avant l'installation de l'extension, n'est jamais touché.
 
 En ligne de commande :
 

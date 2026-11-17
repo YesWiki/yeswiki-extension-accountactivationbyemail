@@ -66,6 +66,15 @@ class AccountCleaner
         return $status;
     }
 
+    /** @return array<string,int> account name => when its last activation mail went out */
+    public function mailSentAtByUser(): array
+    {
+        $property = $this->dbService->escape(AccountActivationService::TRIPLE_PROPERTY_MAIL_SENT_AT);
+        $rows = $this->dbService->loadAll("SELECT `resource`, MAX(`value`) AS `sentAt` FROM {$this->dbService->prefixTable('triples')} WHERE `property` = \"$property\" GROUP BY `resource`");
+
+        return array_column(array_map(fn ($row) => [(string)$row['resource'], (int)$row['sentAt']], array_filter($rows, fn ($row) => ctype_digit((string)$row['sentAt']))), 1, 0);
+    }
+
     /** @return string[] tags of the latest pages the account owns */
     public function ownedPages(string $name): array
     {
@@ -83,7 +92,7 @@ class AccountCleaner
     }
 
     /**
-     * Accounts that signed up, were sent an activation link, never used it, and are older than the lifetime.
+     * Accounts that were sent an activation link longer ago than the lifetime, never used it, and left nothing.
      *
      * @return User[]
      */
@@ -95,13 +104,12 @@ class AccountCleaner
         }
         $limit = ($now ?? time()) - $days * 86400;
         $status = $this->activationByUser();
+        $sentAt = $this->mailSentAtByUser();
         $revisions = $this->revisionsByUser();
 
-        return array_values(array_filter($this->userManager->getAll(), function (User $user) use ($limit, $status, $revisions) {
-            $signup = strtotime((string)$user['signuptime']);
-
+        return array_values(array_filter($this->userManager->getAll(), function (User $user) use ($limit, $status, $sentAt, $revisions) {
             return ($status[$user['name']] ?? AccountActivationService::TRIPLE_ACTIVATED_VALUE) !== AccountActivationService::TRIPLE_ACTIVATED_VALUE
-                && $signup !== false && $signup < $limit
+                && isset($sentAt[$user['name']]) && $sentAt[$user['name']] < $limit
                 && $this->leftNothing($user, $revisions[$user['name']] ?? 0);
         }));
     }

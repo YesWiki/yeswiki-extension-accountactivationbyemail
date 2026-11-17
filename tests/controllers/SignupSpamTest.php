@@ -110,15 +110,17 @@ class SignupSpamTest extends YesWikiTestCase
         $this->assertStringContainsString('username=BerthaGwinn', $notifier->sent[0]['text']);
     }
 
-    public function testOnlyAnUnactivatedAccountThatLeftNothingIsPurged()
+    public function testOnlyAnAccountSentItsLinkDaysAgoThatLeftNothingIsPurged()
     {
         foreach (['SpamTestWaiting', 'SpamTestActive', 'SpamTestWriter', 'SpamTestLegacy'] as $name) {
             $this->users()->create($name, strtolower($name) . '@example.org', 'spam-test-password');
-            $this->ageAccount($name, 4);
+            $this->ageAccount($name, 30);
         }
         foreach (['SpamTestWaiting', 'SpamTestActive', 'SpamTestWriter'] as $name) {
             $this->triples()->create($name, AccountActivationService::TRIPLE_PROPERTY_ACTIVATION_KEY, 'key-' . $name, '', '');
+            $this->triples()->create($name, AccountActivationService::TRIPLE_PROPERTY_MAIL_SENT_AT, (string)strtotime('-4 days'), '', '');
         }
+        $this->triples()->create('SpamTestLegacy', AccountActivationService::TRIPLE_PROPERTY_ACTIVATION_KEY, 'key-never-mailed', '', '');
         $this->wiki->services->get(AccountActivationService::class)->activate('SpamTestActive', '', true);
         $this->wiki->services->get(DbService::class)->query(
             'INSERT INTO ' . $this->wiki->services->get(DbService::class)->prefixTable('pages')

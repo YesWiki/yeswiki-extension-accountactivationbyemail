@@ -59,7 +59,7 @@ class SpamAccountsCommand extends Command
             }
             $rows[] = [
                 $verdict['score'],
-                ($status[$user['name']] ?? AccountActivationService::TRIPLE_ACTIVATED_VALUE) === AccountActivationService::TRIPLE_ACTIVATED_VALUE ? _t('YES') : _t('NO'),
+                isset($status[$user['name']]) ? ($status[$user['name']] === AccountActivationService::TRIPLE_ACTIVATED_VALUE ? _t('YES') : _t('NO')) : '–',
                 $user['name'],
                 $user['email'],
                 substr((string)$user['signuptime'], 0, 10),

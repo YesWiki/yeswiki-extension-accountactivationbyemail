@@ -6,7 +6,7 @@ This extension adds process to activate account by email.
  - Compatibility with extensions `logincas`, `login-sso`, `loginldap` has not been verified.
  - Checking process can be inactivated via page [GererConfig](?GererConfig ':ignore') in parte `Activation des comptes par e-mail` with parameter `signup_email_activation`
  - Signups whose name or address look like a robot's (betting or IPTV words, code-like names, a stranger's numbered address) are refused from 3 points (`signup_spam_threshold`, `signup_refuse_spam`, `signup_spam_contact`, `signup_spam_words`). Lower scores are posted to Mattermost (`signup_mattermost_webhook`, or the farm's `yeswiki-farm-mattermost-webhook`) with a link to `?PagePrincipale/deleteaccount&username=<name>`, where an admin reviews and deletes the account.
- - Accounts that were sent an activation link, never used it and left nothing are deleted after 3 days (`unactivated_account_lifetime`, `0` keeps them), at each signup or with `./yeswicli activation:purge`. `./yeswicli activation:spam` lists suspicious accounts, `--delete` removes those that left nothing.
+ - Accounts that left nothing are deleted 3 days after their last unused activation link (`unactivated_account_lifetime`, `0` keeps them), at each signup or with `./yeswicli activation:purge`. `./yeswicli activation:spam` lists suspicious accounts, `--delete` removes those that left nothing.
 
 ## Fonctionning
 
